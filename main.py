@@ -53,6 +53,9 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_tg_message(message)
         except Exception as e:
             logger.error("Unable to process request", exc_info=e)
+        self.send_response(HTTPStatus.OK)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
 
     def send_tg_message(self, data):
         str_d = str(data)
