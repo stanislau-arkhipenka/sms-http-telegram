@@ -5,7 +5,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-WorkingDirectory=/opt/sms_http_telegram$/
+WorkingDirectory=/opt/sms_http_telegram/
 
 User=MY_USER
 Group=MY_USER
