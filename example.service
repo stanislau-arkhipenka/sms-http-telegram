@@ -10,7 +10,7 @@ WorkingDirectory=/opt/sms_http_telegram$/
 User=MY_USER
 Group=MY_USER
 
-ExecStart=/opt/sms_http_telegram/.venv/bin/python3 /opt/sms_http_telegram/acp/main.py /opt/sms_http_telegram/config.json
+ExecStart=/opt/sms_http_telegram/.venv/bin/python3 /opt/sms_http_telegram/main.py /opt/sms_http_telegram/config.json
 
 # Let systemd restart this service always
 Restart=always
