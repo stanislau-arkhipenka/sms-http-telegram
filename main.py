@@ -2,22 +2,21 @@ import sys
 import base64
 import logging
 import json
+import requests
 
 from http import HTTPStatus
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 logger = logging.getLogger(__name__)
 
+ADDR="192.168.0.10"
+PORT=8000
 
 class RequestHandler(BaseHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
-        try:
-            with open("./config.json") as f:
-                self.srv_conf = json.load(f)
-        except Exception as e:
-            logger.warning("Unable to load login/password")
-            self.srv_conf = {}
+        with open("./config.json") as f:
+            self.srv_conf = json.load(f)
 
         super().__init__(*args, **kwargs)
 
@@ -50,12 +49,30 @@ class RequestHandler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get('content-length'))
             message = json.loads(self.rfile.read(length))
-            print(message)
+            logger.info("Message received: %s", str(message))
+            self.send_tg_message(message)
         except Exception as e:
             logger.error("Unable to process request", exc_info=e)
+
+    def send_tg_message(self, data):
+        str_d = str(data)
+        token = self.srv_conf.get("token")
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+        payload = {
+            "chat_id": self.srv_conf.get("chat_id"),
+            "text": str_d
+        }
+        headers = {
+            "accept": "application/json",
+            "User-Agent": "Telegram Bot SDK",
+            "content-type": "application/json"
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        logger.info("Telegram response: %s -- %s", response.status_code, response.text)
 
 
 if __name__ == "__main__":
 
-    with HTTPServer(("0.0.0.0", 8000), RequestHandler) as server:
+    with HTTPServer((ADDR, PORT), RequestHandler) as server:
         server.serve_forever()
