@@ -12,10 +12,24 @@ logger = logging.getLogger(__name__)
 ADDR="192.168.0.10"
 PORT=8000
 
+"""
+config file:
+{
+    "login": "foo",
+    "password": "bar",
+    "token": "baz",
+    "chat_map": [
+        1: "123123123",
+        2: "234234234"
+    ]
+}
+"""
+
+
 class RequestHandler(BaseHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
-        with open("./config.json") as f:
+        with open(sys.argv[1]) as f:
             self.srv_conf = json.load(f)
 
         super().__init__(*args, **kwargs)
@@ -58,12 +72,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def send_tg_message(self, data):
-        str_d = str(data)
+        str_d = f"FROM: {data.get('x1')}\nMESSAGE: {data.get('x3')}"
+        sim_id = data.get('x2')
         token = self.srv_conf.get("token")
         url = f"https://api.telegram.org/bot{token}/sendMessage"
 
         payload = {
-            "chat_id": self.srv_conf.get("chat_id"),
+            "chat_id": self.srv_conf.get("chat_map", {})[sim_id],
             "text": str_d
         }
         headers = {
