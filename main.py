@@ -76,6 +76,12 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(levelname)s][%(name)s] %(message)s",
+        handlers=[
+        logging.StreamHandler()
+        ]
+    )
     with HTTPServer((ADDR, PORT), RequestHandler) as server:
         server.serve_forever()
