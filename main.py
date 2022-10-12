@@ -73,7 +73,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def send_tg_message(self, data):
         str_d = f"FROM: {data.get('x1')}\nMESSAGE: {data.get('x3')}"
-        sim_id = data.get('x2')
+        sim_id = str(data.get('x2'))
         token = self.srv_conf.get("token")
         url = f"https://api.telegram.org/bot{token}/sendMessage"
 
@@ -99,4 +99,5 @@ if __name__ == "__main__":
         ]
     )
     with HTTPServer((ADDR, PORT), RequestHandler) as server:
+        logger.info("Starting server...")
         server.serve_forever()
